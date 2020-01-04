@@ -28,6 +28,16 @@ class App extends Component {
     });
   };
 
+  handleDeleteItem = id => {
+    const newItem = this.state.textList;
+    newItem.splice(id, 1);
+
+    this.setState({
+      textList: newItem
+    });
+    console.log(newItem);
+  };
+
   render() {
     return (
       <Aux>
@@ -41,11 +51,29 @@ class App extends Component {
             Dodaj
           </button>
 
-          <ul>
-            {this.state.textList.map(text => {
-              return <li>{text}</li>;
+          <table>
+            <tr>
+              <th>List</th>
+              <th>Action</th>
+            </tr>
+
+            {this.state.textList.map((text, index) => {
+              return (
+                <tr>
+                  <td>{text}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        this.handleDeleteItem(index);
+                      }}
+                    >
+                      Obrisi
+                    </button>
+                  </td>
+                </tr>
+              );
             })}
-          </ul>
+          </table>
         </div>
       </Aux>
     );
