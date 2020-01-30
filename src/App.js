@@ -1,83 +1,119 @@
 import React, { Component } from "react";
-import classes from "./App.module.css";
-import withClass from "./hoc/withClass";
-import Aux from "./hoc/Aux";
+import "./App.css";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      inputText: "",
-      textList: []
-    };
+  state = {
+    title: "React SIMPLE CRUD APPLICATION",
+    act: 0,
+    index: "",
+    datas: []
+  };
+
+  componentDidMount() {
+    this.refs.name.focus();
   }
 
-  handleChangeText = event => {
+  onSubmit = e => {
+    e.preventDefault();
+
+    let datas = this.state.datas;
+    let name = this.refs.name.value;
+    let address = this.refs.address.value;
+
+    if (this.state.act === 0) {
+      //new
+      let data = {
+        name,
+        address
+      };
+      datas.push(data);
+    } else {
+      //update
+      let index = this.state.index;
+      datas[index].name = name;
+      datas[index].address = address;
+    }
+
     this.setState({
-      inputText: event.target.value
+      datas: datas,
+      act: 0
+    });
+
+    this.refs.myForm.reset();
+    this.refs.name.focus();
+  };
+
+  handleRemove = index => {
+    let datas = this.state.datas;
+
+    datas.splice(index, 1);
+    this.setState({
+      datas: datas
     });
   };
 
-  handleButtonClick = input => {
-    let listArray = this.state.textList;
-
-    listArray.push(input);
-    this.setState({
-      textList: listArray,
-      inputText: ""
-    });
-  };
-
-  handleDeleteItem = id => {
-    const newItem = this.state.textList;
-    newItem.splice(id, 1);
+  handleEdit = i => {
+    let data = this.state.datas[i];
+    this.refs.name.value = data.name;
+    this.refs.address.value = data.address;
 
     this.setState({
-      textList: newItem
+      act: 1,
+      index: i
     });
-    console.log(newItem);
+
+    this.refs.name.focus();
   };
 
   render() {
     return (
-      <Aux>
-        <div>
+      <div className="App">
+        <h2>{this.state.title}</h2>
+        <form ref="myForm" className="myForm">
           <input
-            value={this.state.inputText}
             type="text"
-            onChange={event => this.handleChangeText(event)}
+            ref="name"
+            placeholder="your name"
+            className="formField"
           />
-          <button onClick={() => this.handleButtonClick(this.state.inputText)}>
-            Dodaj
+          <input
+            type="text"
+            ref="address"
+            placeholder="your address"
+            className="formField"
+          />
+          <button
+            type="submit"
+            className="myButton"
+            onClick={e => this.onSubmit(e)}
+          >
+            {this.state.act === 0 ? "Dodaj" : "Izmeni"}
           </button>
-
-          <table>
-            <tr>
-              <th>List</th>
-              <th>Action</th>
-            </tr>
-
-            {this.state.textList.map((text, index) => {
-              return (
-                <tr>
-                  <td>{text}</td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        this.handleDeleteItem(index);
-                      }}
-                    >
-                      Obrisi
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </table>
-        </div>
-      </Aux>
+        </form>
+        <pre>
+          {this.state.datas.map((data, i) => (
+            <li key={i} className="myList">
+              {i + 1}. {data.name}, {data.address}
+              <button
+                type="submit"
+                className="myListButton"
+                onClick={() => this.handleRemove(i)}
+              >
+                Delete
+              </button>
+              <button
+                type="submit"
+                className="myListButton"
+                onClick={() => this.handleEdit(i)}
+              >
+                Edit
+              </button>
+            </li>
+          ))}
+        </pre>
+      </div>
     );
   }
 }
 
-export default withClass(App, classes.App);
+export default App;
